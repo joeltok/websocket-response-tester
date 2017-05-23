@@ -1,5 +1,3 @@
-# Websocket Tester
-
 ## Introduction
 
 The objective of this module is to effectively test asynchronous message events from websocket connections. This module has only been tested with socket.io. 
@@ -9,9 +7,9 @@ The difficulty involved with testing websocket message events arise in particula
 - An HTTP call from a secondary source - maybe an admin user wishing to trigger an event - results in several sockets receiving messages. Again, we have to test that these sockets have received the correct messages. 
 
 One of the ways to overcome this problem is by the use of setTimeout in Node.js to check periodically for any changes in non-local state variables. The downsides of this approach are 
-1. The pollution of higher scope environments.
-2. The need for custom code to hook up messages to the respective clients at the start, then remove them after the third-party trigger has done its work.
-3. The need for waiting time while polls take time to happen.
+- The pollution of higher scope environments.
+- The need for custom code to hook up messages to the respective clients at the start, then remove them after the third-party trigger has done its work.
+- The need for waiting time while polls take time to happen.
 
 A more elegant way to approach the problem is via the use of delayed promises. 
 
