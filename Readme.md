@@ -16,7 +16,7 @@ A more elegant way to approach the problem is via the use of **delayed promises*
 ## Installation
 
 ```bash
-npm install socket.io --save
+npm install websocket-response-tester --save
 ```
 
 ## How to use
