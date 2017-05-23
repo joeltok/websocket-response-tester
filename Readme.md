@@ -11,7 +11,7 @@ One of the ways to overcome this problem is by the use of setTimeout in Node.js 
 - The need for custom code to hook up messages to the respective clients at the start, then remove them after the third-party trigger has done its work.
 - The need for waiting time while polls take time to happen.
 
-A more elegant way to approach the problem is via the use of delayed promises. 
+A more elegant way to approach the problem is via the use of **delayed promises**. 
 
 ## Installation
 
