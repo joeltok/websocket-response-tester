@@ -3,16 +3,14 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
-  "author": "joeltok",
+  "author": "joeltok jtok.dev@gmail.comm",
   "license": "MIT",
   "scripts": {
     "test": "mocha test/index.js"
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^2.5.3"
-  },
-  "dependencies": {
+    "mocha": "^2.5.3",
     "socket.io": "^1.7.3",
     "socket.io-client": "^2.0.1"
   }
