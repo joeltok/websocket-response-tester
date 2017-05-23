@@ -1,9 +1,9 @@
 var SocketResponseTester = {}
 
-// Attaches listeners to the relevant players,
+// Attaches listeners to the relevant sockets,
 // then fires a sequence (embodied in the form of a promise factory, which fires for the side-effects),
 // then waits for the response from all those users
-// and finally returns an array of the responses from each socket, in the original order
+// and finally returns an array of the messages received by each socket, in the original order
 SocketResponseTester.fire = function(sockets, promiseFactory) {
 	// sockets should be 
 

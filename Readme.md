@@ -1,6 +1,6 @@
 ## Introduction
 
-The objective of this module is to effectively test asynchronous message events from websocket connections. This module has only been tested with socket.io. 
+Effectively test asynchronous message events from websocket connections. Only tested with socket.io. 
 
 The difficulty involved with testing websocket message events arise in particular during indirect trigger events. This occurs when a message is sent to the socket *not as a result of a write from the socket itself*. Examples of use cases are:
 - Socket A writes to its counterparty socket, which then receives the message and sends out messages to sockets B, C and D. In this case, we must test that sockets B, C and D have received the message. 
@@ -39,7 +39,7 @@ Example Promise Factory
 ```js
 var promiseFactory = function() {
 	return new Promise((resolve, reject) => {
-		// do something...
+		// do something that should trigger messages being received by the sockets in the sockets array...
 
 		resolve(true)
 	})
