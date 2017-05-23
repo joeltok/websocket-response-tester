@@ -1,0 +1,19 @@
+{
+  "name": "websocket-response-tester",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "author": "joeltok",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha test/index.js"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3"
+  },
+  "dependencies": {
+    "socket.io": "^1.7.3",
+    "socket.io-client": "^2.0.1"
+  }
+}
