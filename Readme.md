@@ -31,7 +31,7 @@ npm install websocket-response-tester --save
 var WRT = require('websocket-response-tester')
 
 // call the function from the module.
-// then is only called if all sockets receive receive a message.
+// then is only called after all sockets have received a message.
 // if any of the sockets fails to receive a message, then is never called, and the code just stalls and waits indefinitely.
 // this is not an issue for mocha test cases, which have a timeout of 2000ms.
 // future implementations of this module can implement a timer option.
@@ -44,7 +44,7 @@ WRT.fire(sockets, promiseFactory)
 where,
 - sockets: an array of socket connections.
 - promiseFactory: a function that returns a promise,  This mechanism exists to ensure that the promise is not fired until we want to fire it in the module code. 
-- messages: the messages received from the on 'message' event handler on each socket, ordered according to the 'sockets' array order
+- messages: the messages received from the 'message' event handler on each socket, ordered according to the 'sockets' array order
 
 Example Promise Factory
 
