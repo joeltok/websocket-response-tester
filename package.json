@@ -1,17 +1,41 @@
 {
   "name": "websocket-response-tester",
-  "version": "0.0.1",
-  "description": "",
+  "version": "1.0.0",
+  "description": "l",
   "main": "index.js",
-  "author": "joeltok jtok.dev@gmail.comm",
-  "license": "MIT",
-  "scripts": {
-    "test": "mocha test/index.js"
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "socket.io-client": "^2.0.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^2.5.3",
     "socket.io": "^1.7.3",
     "socket.io-client": "^2.0.1"
-  }
+  },
+  "scripts": {
+    "test": "mocha test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joeltok/websocket-response-tester.git"
+  },
+  "keywords": [
+    "websocket",
+    "message",
+    "event",
+    "tester",
+    "response",
+    "asynchronous"
+  ],
+  "author": "joeltok jtok.dev@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joeltok/websocket-response-tester/issues"
+  },
+  "homepage": "https://github.com/joeltok/websocket-response-tester#readme"
 }
+
+
