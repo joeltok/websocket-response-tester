@@ -30,7 +30,6 @@ npm install websocket-response-tester --save
 // require the module
 var WRT = require('websocket-response-tester')
 
-// call the function from the module.
 // then is only called after all sockets have received a message.
 // if any of the sockets fails to receive a message, then is never called, and the code just stalls and waits indefinitely.
 // this is not an issue for mocha test cases, which have a timeout of 2000ms.

@@ -1,13 +1,10 @@
 {
   "name": "websocket-response-tester",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "l",
   "main": "index.js",
   "directories": {
     "test": "test"
-  },
-  "dependencies": {
-    "socket.io-client": "^2.0.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
