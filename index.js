@@ -1,4 +1,5 @@
 var SocketResponseTester = (function() {
+
 	return {
 
 		fire: function(sockets, promiseFactory) {
@@ -38,6 +39,7 @@ var SocketResponseTester = (function() {
 		}
 
 	}
+
 }())
 
 module.exports = SocketResponseTester;
