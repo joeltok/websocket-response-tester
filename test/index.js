@@ -69,12 +69,13 @@ describe('Test builder', function() {
 
 	it('# Socket array with one event', function(done) {
 		wrt.build()
-		.waitForEvent(donkeys.pink, 'message')
+		.waitForEvent([donkeys.pink, donkeys.teal], 'message')
 		.asyncFunc(() => {
 			donkeys.blue.emit('message', 'brayyyy')
 		})
 		.then((responses) => {
 			assert.equal(responses[donkeys.pink.io.engine.id]['message'], 'brayyyy')
+			assert.equal(responses[donkeys.teal.io.engine.id]['message'], 'brayyyy')
 			done();
 		})
 	})

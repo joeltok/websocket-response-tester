@@ -48,8 +48,7 @@ var SocketResponseTester = (function() {
 				if (sockets.length == undefined) {
 					sockets = [sockets]
 				}
-				for (var i = 0; i < sockets.length; i++) {
-					var socket = sockets[i]
+				sockets.forEach((socket) => {
 					var conn = connections[socket.io.engine.id]
 					if (!conn) {
 						conn = {
@@ -72,7 +71,7 @@ var SocketResponseTester = (function() {
 					}
 					conn.events.push(event)
 					conn.socket.on(event, listener)
-				}
+				})
 				return this
 			}
 
