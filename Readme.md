@@ -21,7 +21,7 @@ A more elegant way to approach the problem is via the use of **delayed promises*
 ## Installation
 
 ```bash
-npm install websocket-response-tester --save
+npm install websocket-response-tester --save-dev
 ```
 
 ## How to use
@@ -71,3 +71,16 @@ This spins up a node.js server that
 - Starts up 3 client sockets that connect to the server
 - Requires this module 
 - Uses this module to send messages to the server and test the messages sent back to the client side sockets
+
+
+## Future Features
+
+- generic event tester
++ event builder
++ attach listeners to individual clients in a sequence of promises/functions (like the request api)
++ call the factory builder
++ call the final then that runs it
+
+- basic type checking
+
+Contributions are welcome. Submit forks or contact me at jtok.dev@gmail.com
