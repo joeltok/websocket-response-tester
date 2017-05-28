@@ -21,11 +21,18 @@
   },
   "keywords": [
     "websocket",
+    "websockets",
+    "socket.io",
+    "socket.io-client",
     "message",
     "event",
     "tester",
     "response",
-    "asynchronous"
+    "asynchronous",
+    "promises",
+    "promise",
+    "delayed promise",
+    "delayed promises"
   ],
   "author": "joeltok jtok.dev@gmail.com",
   "license": "MIT",
