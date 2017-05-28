@@ -67,7 +67,17 @@ describe('Test builder', function() {
 
 	})
 
-	it('# Socket array with one event')
+	it('# Socket array with one event', function(done) {
+		wrt.build()
+		.waitForEvent(donkeys.pink, 'message')
+		.asyncFunc(() => {
+			donkeys.blue.emit('message', 'brayyyy')
+		})
+		.then((responses) => {
+			assert.equal(responses[donkeys.pink.io.engine.id]['message'], 'brayyyy')
+			done();
+		})
+	})
 
 	it('# Socket array with layered events')
 
