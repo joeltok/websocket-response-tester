@@ -16,7 +16,10 @@
 //	{
 //		id1: {
 //			socket: socket,
-//			events: ['message', 'news', 'news'],
+//			events: {
+//				message: 1,
+//				news: 2
+//			},
 //			resolves: {
 //				'message': [resolve],
 //				'news': [resolve1, resolve2]
@@ -53,24 +56,15 @@ var SocketResponseTester = (function() {
 					if (!conn) {
 						conn = {
 							socket: socket,
-							events: [],
+							events: {},
 							resolves: {}
 						}
 						connections[socket.io.engine.id] = conn
 					}
-					var listener = (data) => {
-						socket.removeListener(event, listener);
-						if (!responses[socket.io.engine.id]) {
-							responses[socket.io.engine.id] = {}
-						}
-						if (!responses[socket.io.engine.id][event]) {
-							responses[socket.io.engine.id][event] = []
-						}
-						responses[socket.io.engine.id][event].push(data)
-						conn.resolves[event].shift()(true)
+					if (!conn.events[event]) {
+						conn.events[event] = 0
 					}
-					conn.events.push(event)
-					conn.socket.on(event, listener)
+					conn.events[event]++
 				})
 				return this
 			}
@@ -80,17 +74,44 @@ var SocketResponseTester = (function() {
 				return this
 			}
 
+
+
 			tester.then = function(f) {
+				// attach listeners to listen for emit events. 
+				Object.keys(connections).forEach((id) => {
+					var conn = connections[id]
+					Object.keys(conn.events).forEach((event) => {
+						var listener = (data) => {
+							// only remove the listener if all events have been caught
+							conn.events[event]--
+							if (conn.events[event] == 0) {
+								conn.socket.off(event, listener);
+							}
+							if (!responses[conn.socket.io.engine.id]) {
+								responses[conn.socket.io.engine.id] = {}
+							}
+							if (!responses[conn.socket.io.engine.id][event]) {
+								responses[conn.socket.io.engine.id][event] = []
+							}
+							responses[conn.socket.io.engine.id][event].push(data)
+							conn.resolves[event].shift()(true)
+						}
+						conn.socket.on(event, listener)
+					})
+				})
 				// this mechanism creates promises whose resolves are stored for later use
 				Object.keys(connections).forEach((id) => {
-					storedPromises = storedPromises.concat(connections[id].events.map((event) => {
-						return new Promise((resolve, reject) => {
-							if (!connections[id].resolves[event]) {
-								connections[id].resolves[event] = []
-							}
-							connections[id].resolves[event].push(resolve)
-						})
-					}))
+					var conn = connections[id]
+					Object.keys(conn.events).forEach((event) => {
+						for (var i = 0; i < conn.events[event]; i++) {
+							storedPromises.push(new Promise((resolve, reject) => {
+								if (!conn.resolves[event]) {
+									conn.resolves[event] = []
+								}
+								conn.resolves[event].push(resolve)
+							}))
+						}
+					})
 				})
 				asyncs.forEach((f) => {
 					f()

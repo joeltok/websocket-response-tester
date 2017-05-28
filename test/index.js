@@ -8,15 +8,19 @@ var clients = []
 var server = require('http').createServer()
 var io = require('socket.io')(server)
 io.on('connection', function(client) {
+
 	clients.push(client)
 	console.log('One donkey connected.')
+
 	client.on('message', (data) => {
 		clients.forEach((c) => {
 			if (c.connected) {
+console.log(data)
 				c.emit('message', data)
 			}
 		})
 	})
+
 	client.on('animal sound', (data) => {
 		clients.forEach((c) => {
 			if(c.connected) {
@@ -28,6 +32,7 @@ io.on('connection', function(client) {
 			}
 		})
 	})
+
 	client.on('disconnect', () => {
 		console.log('One donkey has disconnected. I think it is bored of carrying goods.')
 	})
@@ -61,7 +66,7 @@ describe('Test builder', function() {
 			donkeys.blue.emit('animal sound', 'oink oink')
 		})
 		.then((responses) => {
-			assert.equal(responses[donkeys.blue.io.engine.id]['animal sound'], 'you are supposed to be a donkey')
+			assert.equal(responses[donkeys.blue.io.engine.id]['animal sound'][0], 'you are supposed to be a donkey')
 			done()
 		})
 
@@ -74,17 +79,32 @@ describe('Test builder', function() {
 			donkeys.blue.emit('message', 'brayyyy')
 		})
 		.then((responses) => {
-			assert.equal(responses[donkeys.pink.io.engine.id]['message'], 'brayyyy')
-			assert.equal(responses[donkeys.teal.io.engine.id]['message'], 'brayyyy')
+			assert.equal(responses[donkeys.pink.io.engine.id]['message'][0], 'brayyyy')
+			assert.equal(responses[donkeys.teal.io.engine.id]['message'][0], 'brayyyy')
 			done();
 		})
 	})
 
-	it('# Socket array with layered events')
-
-	it('# Multiple events per sockets')
-
-	it('# Multiple events per socket with names')
+	it('# Socket array with layered events', function(done) {
+		wrt.build()
+		.waitForEvent([donkeys.blue, donkeys.pink, donkeys.teal], 'message')
+		.waitForEvent([donkeys.blue, donkeys.pink], 'message')
+		.waitForEvent(donkeys.teal, 'animal sound')
+		.asyncFunc(() => {
+			donkeys.blue.emit('message', 'hey!')
+			donkeys.blue.emit('message', 'moo?')
+			donkeys.blue.emit('animal sound', 'brayyyy')
+		})
+		.then((responses) => {
+			assert.equal(responses[donkeys.blue.io.engine.id]['message'][0], 'hey!')
+			assert.equal(responses[donkeys.pink.io.engine.id]['message'][0], 'hey!')
+			assert.equal(responses[donkeys.teal.io.engine.id]['message'][0], 'hey!')
+			assert.equal(responses[donkeys.blue.io.engine.id]['message'][1], 'moo?')
+			assert.equal(responses[donkeys.pink.io.engine.id]['message'][1], 'moo?')
+			assert.equal(responses[donkeys.teal.io.engine.id]['animal sound'][0], 'good boy')
+			done()			
+		})
+	})
 
 })
 
