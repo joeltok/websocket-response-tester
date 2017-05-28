@@ -73,14 +73,4 @@ This spins up a node.js server that
 - Uses this module to send messages to the server and test the messages sent back to the client side sockets
 
 
-## Future Features
-
-- generic event tester
-+ event builder
-+ attach listeners to individual clients in a sequence of promises/functions (like the request api)
-+ call the factory builder
-+ call the final then that runs it
-
-- basic type checking
-
-Contributions are welcome. Submit forks or contact me at jtok.dev@gmail.com
+Contributions are welcome. For questions, please contact me at jtok.dev@gmail.com
