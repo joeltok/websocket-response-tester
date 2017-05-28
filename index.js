@@ -36,18 +36,20 @@ var SocketResponseTester = (function() {
 		build: function() {
 
 			var connections = []
-			var tester = {}
 			var asyncs = []
 			var resolves = {}
 			var storedPromises = []
 			var responses = {}
 
-			tester.attachEvent = function(sockets, event) {
+			var tester = {}
+
+			tester.waitForEvent = function(sockets, event) {
 				// can be either a single socket, or an array of sockets
 				if (sockets.length == undefined) {
 					sockets = [sockets]
 				}
 				for (var i = 0; i < sockets.length; i++) {
+					var socket = sockets[i]
 					var conn = connections[socket.io.engine.id]
 					if (!conn) {
 						conn = {
@@ -71,16 +73,18 @@ var SocketResponseTester = (function() {
 					conn.events.push(event)
 					conn.socket.on(event, listener)
 				}
+				return this
 			}
 
-			tester.attachAsynFunc = function(f) {
+			tester.asyncFunc = function(f) {
 				asyncs.push(f)
+				return this
 			}
 
 			tester.then = function(f) {
 				// this mechanism creates promises whose resolves are stored for later use
 				Object.keys(connections).forEach((id) => {
-					storedPromises.concat(connections[id].events.map((event) => {
+					storedPromises = storedPromises.concat(connections[id].events.map((event) => {
 						return new Promise((resolve, reject) => {
 							if (!connections[id].resolves[event]) {
 								connections[id].resolves[event] = []
@@ -97,6 +101,8 @@ var SocketResponseTester = (function() {
 					return f(responses)
 				})
 			}
+
+			return tester
 
 
 		},

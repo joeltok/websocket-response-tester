@@ -13,7 +13,18 @@ io.on('connection', function(client) {
 	client.on('message', (data) => {
 		clients.forEach((c) => {
 			if (c.connected) {
-				c.send(data)
+				c.emit('message', data)
+			}
+		})
+	})
+	client.on('animal sound', (data) => {
+		clients.forEach((c) => {
+			if(c.connected) {
+				if (data == 'brayyyy') {
+					c.emit('animal sound', 'good boy')
+				} else {
+					c.emit('animal sound', 'you are supposed to be a donkey')
+				}
 			}
 		})
 	})
@@ -27,7 +38,6 @@ server.listen(3000)
 var socketGen = function(name) {
 	var client = require('socket.io-client')('http://localhost:3000')
 	client.on('connect', () => {
-		console.log(name + ': brayyyy!')
 	})
 	return client
 }
@@ -42,9 +52,35 @@ var wrt = require('./../index.js')
 
 
 // test cases
-describe('echo from one donkey', function() {
+describe('Test builder', function() {
 
-	it('brayyyy', function(done) {
+	it('# One socket with one event', function(done) {
+		wrt.build()
+		.waitForEvent(donkeys.blue, 'animal sound')
+		.asyncFunc(() => {
+			donkeys.blue.emit('animal sound', 'oink oink')
+		})
+		.then((responses) => {
+			assert.equal(responses[donkeys.blue.io.engine.id]['animal sound'], 'you are supposed to be a donkey')
+			done()
+		})
+
+	})
+
+	it('# Socket array with one event')
+
+	it('# Socket array with layered events')
+
+	it('# Multiple events per sockets')
+
+	it('# Multiple events per socket with names')
+
+})
+
+
+describe('Test fire (deprecated)', function() {
+
+	it('# brayyyy', function(done) {
 		wrt.fire(
 			[donkeys.blue, donkeys.pink, donkeys.teal], 
 			function() {
@@ -62,7 +98,7 @@ describe('echo from one donkey', function() {
 		})
 	})
 
-	it('cloink', function(done) {
+	it('# cloink', function(done) {
 		wrt.fire(
 			[donkeys.blue, donkeys.pink, donkeys.teal], 
 			function() {
