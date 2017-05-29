@@ -10,12 +10,11 @@ var io = require('socket.io')(server)
 io.on('connection', function(client) {
 
 	clients.push(client)
-	console.log('One donkey connected.')
+//	console.log('One donkey connected.')
 
 	client.on('message', (data) => {
 		clients.forEach((c) => {
 			if (c.connected) {
-console.log(data)
 				c.emit('message', data)
 			}
 		})
@@ -61,8 +60,8 @@ describe('Test builder', function() {
 
 	it('# One socket with one event', function(done) {
 		wrt.build()
-		.waitForEvent(donkeys.blue, 'animal sound')
-		.asyncFunc(() => {
+		.addEventWaiter(donkeys.blue, 'animal sound')
+		.queueFunction(() => {
 			donkeys.blue.emit('animal sound', 'oink oink')
 		})
 		.then((responses) => {
@@ -74,8 +73,8 @@ describe('Test builder', function() {
 
 	it('# Socket array with one event', function(done) {
 		wrt.build()
-		.waitForEvent([donkeys.pink, donkeys.teal], 'message')
-		.asyncFunc(() => {
+		.addEventWaiter([donkeys.pink, donkeys.teal], 'message')
+		.queueFunction(() => {
 			donkeys.blue.emit('message', 'brayyyy')
 		})
 		.then((responses) => {
@@ -87,10 +86,10 @@ describe('Test builder', function() {
 
 	it('# Socket array with layered events', function(done) {
 		wrt.build()
-		.waitForEvent([donkeys.blue, donkeys.pink, donkeys.teal], 'message')
-		.waitForEvent([donkeys.blue, donkeys.pink], 'message')
-		.waitForEvent(donkeys.teal, 'animal sound')
-		.asyncFunc(() => {
+		.addEventWaiter([donkeys.blue, donkeys.pink, donkeys.teal], 'message')
+		.addEventWaiter([donkeys.blue, donkeys.pink], 'message')
+		.addEventWaiter(donkeys.teal, 'animal sound')
+		.queueFunction(() => {
 			donkeys.blue.emit('message', 'hey!')
 			donkeys.blue.emit('message', 'moo?')
 			donkeys.blue.emit('animal sound', 'brayyyy')

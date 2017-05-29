@@ -46,7 +46,7 @@ var SocketResponseTester = (function() {
 
 			var tester = {}
 
-			tester.waitForEvent = function(sockets, event) {
+			tester.addEventWaiter = function(sockets, event) {
 				// can be either a single socket, or an array of sockets
 				if (sockets.length == undefined) {
 					sockets = [sockets]
@@ -69,7 +69,7 @@ var SocketResponseTester = (function() {
 				return this
 			}
 
-			tester.asyncFunc = function(f) {
+			tester.queueFunction = function(f) {
 				asyncs.push(f)
 				return this
 			}
