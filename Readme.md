@@ -62,7 +62,7 @@ Then is only called after the socket has received the stated event. If the socke
 ## Advanced Usage
 
 - Each socket can have multiple event waiters attached.
-- Event waiters can be stacked, i.e. one socket can wait for multiple events of the same kind. .then() only fires after all of the attached events are returned. In the above example, socket1 and socket2 will wait for 2 'message' events each, while socket3 will wait for 1 'message' event and 1 'news' event. 
+- Event waiters can be stacked, i.e. one socket can wait for multiple events of the same kind. Then only fires after all of the attached events are returned. In the above example, socket1 and socket2 will wait for 2 'message' events each, while socket3 will wait for 1 'message' event and 1 'news' event. 
 
 ```js
 var WRT = require('websocket-response-tester')
