@@ -7,7 +7,7 @@
 // 	Returns:
 //	{
 //		id1: {
-//			message: data,
+//			message: [data],
 //			news: [data, data]
 //		}
 //	}

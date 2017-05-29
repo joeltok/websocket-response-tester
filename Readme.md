@@ -35,7 +35,7 @@ console.log(socket.io.engine.id) // to get the socketUniqueId
 WRT.build()
 .addEventWaiter(socket, 'message')
 .queueFunction(() => {
-		// do something that should trigger messages being received by the socket
+	// do something that should trigger messages being received by the socket
 
 })
 .then((responses) => {
@@ -43,23 +43,26 @@ WRT.build()
 })
 ```
 
-.then is only called after the socket has received the stated event. If the socket fails to receive a message, .then is never called, and the code just stalls and waits indefinitely. This is not an issue for mocha test cases, which have a timeout of 2000ms.
+Then is only called after the socket has received the stated event. If the socket fails to receive a message, then is never called, and the code just stalls and waits indefinitely. This is not an issue for mocha test cases, which have a timeout of 2000ms.
 
-Responses are of the form
 
 ```javascript
+// Responses are of the form
 {
 	socketUniqueId1: {
-		eventTitle1: 'data1'
+		eventTitle1: [data]
 	},
 	socketUniqueId2: {
-		eventTitle2: 'data2',
-		eventTitle3: 'data3'
+		eventTitle2: [data, data],
+		eventTitle3: [data3]
 	}
 }
 ```
 
 ## Advanced Usage
+
+- Each socket can have multiple event waiters attached.
+- Event waiters can be stacked, i.e. one socket can wait for multiple events of the same kind. .then() only fires after all of the attached events are returned. In the above example, socket1 and socket2 will wait for 2 'message' events each, while socket3 will wait for 1 'message' event and 1 'news' event. 
 
 ```js
 var WRT = require('websocket-response-tester')
@@ -73,18 +76,13 @@ WRT.build()
 .addEventWaiter([socket1, socket2], 'message')
 .addEventWaiter(socket3, 'news')
 .queueFunction(() => {
-		// do something that should trigger messages being received by the socket
+	// do something that should trigger messages being received by the socket
 
 })
 .then((responses) => {
 	console.log(responses) 
 })
 ```
-
-Points of note:
-- Each socket can have multiple event waiters attached.
-- Event waiters can be stacked, i.e. one socket can wait for multiple events of the same kind. .then() only fires after all of the attached events are returned. In the above example, socket1 and socket2 will wait for 2 'message' events each, while socket3 will wait for 1 'message' event and 1 'news' event. 
-
 
 ## Testing
 
@@ -100,6 +98,11 @@ This spins up a node.js server that
 - Starts up 3 client sockets that connect to the server
 - Requires this module 
 - Uses this module to send messages to the server and test the messages sent back to the client side sockets
+
+## WRT.fire
+
+- Is an inflexible design pattern and will no longer be supported. It is kept around only for legacy reasons. 
+
 
 ## Contributions
 
