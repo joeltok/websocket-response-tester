@@ -24,38 +24,67 @@ A more elegant way to approach the problem is via the use of **delayed promises*
 npm install websocket-response-tester --save-dev
 ```
 
-## How to use
+## Simple Usage
 
 ```js
-// require the module
 var WRT = require('websocket-response-tester')
 
-// then is only called after all sockets have received a message.
-// if any of the sockets fails to receive a message, then is never called, and the code just stalls and waits indefinitely.
-// this is not an issue for mocha test cases, which have a timeout of 2000ms.
-// future implementations of this module can implement a timer option.
-WRT.fire(sockets, promiseFactory)
-.then((messages) => {
-	console.log(messages)
+var socket = require('socket.io-client')('http://localhost:3000')
+console.log(socket.io.engine.id) // to get the socketUniqueId
+
+WRT.build()
+.addEventWaiter(socket, 'message')
+.queueFunction(() => {
+		// do something that should trigger messages being received by the socket
+
+})
+.then((responses) => {
+	console.log(responses) 
 })
 ```
 
-where,
-- sockets: an array of socket connections.
-- promiseFactory: a function that returns a promise,  This mechanism exists to ensure that the promise is not fired until we want to fire it in the module code. 
-- messages: the messages received from the 'message' event handler on each socket, ordered according to the 'sockets' array order
+.then is only called after the socket has received the stated event. If the socket fails to receive a message, .then is never called, and the code just stalls and waits indefinitely. This is not an issue for mocha test cases, which have a timeout of 2000ms.
 
-Example Promise Factory
+Responses are of the form
 
-```js
-var promiseFactory = function() {
-	return new Promise((resolve, reject) => {
-		// do something that should trigger messages being received by the sockets in the sockets array...
-
-		resolve(true)
-	})
+```javascript
+{
+	socketUniqueId1: {
+		eventTitle1: 'data1'
+	},
+	socketUniqueId2: {
+		eventTitle2: 'data2',
+		eventTitle3: 'data3'
+	}
 }
 ```
+
+## Advanced Usage
+
+```js
+var WRT = require('websocket-response-tester')
+
+var socket1 = require('socket.io-client')('http://localhost:3000')
+var socket2 = require('socket.io-client')('http://localhost:3000')
+var socket3 = require('socket.io-client')('http://localhost:3000')
+
+WRT.build()
+.addEventWaiter([socket1, socket2, socket3], 'message')
+.addEventWaiter([socket1, socket2], 'message')
+.addEventWaiter(socket3, 'news')
+.queueFunction(() => {
+		// do something that should trigger messages being received by the socket
+
+})
+.then((responses) => {
+	console.log(responses) 
+})
+```
+
+Points of note:
+- Each socket can have multiple event waiters attached.
+- Event waiters can be stacked, i.e. one socket can wait for multiple events of the same kind. .then() only fires after all of the attached events are returned. In the above example, socket1 and socket2 will wait for 2 'message' events each, while socket3 will wait for 1 'message' event and 1 'news' event. 
+
 
 ## Testing
 
@@ -72,5 +101,9 @@ This spins up a node.js server that
 - Requires this module 
 - Uses this module to send messages to the server and test the messages sent back to the client side sockets
 
+## Contributions
+
+To-do:
+- timer option that throws an error, so that the code doesn't stall and wait indefinitely.
 
 Contributions are welcome. For questions, please contact me at jtok.dev@gmail.com
