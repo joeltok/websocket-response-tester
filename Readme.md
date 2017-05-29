@@ -99,11 +99,6 @@ This spins up a node.js server that
 - Requires this module 
 - Uses this module to send messages to the server and test the messages sent back to the client side sockets
 
-## WRT.fire
-
-- Is an inflexible design pattern and will no longer be supported. It is kept around only for legacy reasons. 
-
-
 ## Contributions
 
 To-do:
