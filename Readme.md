@@ -30,10 +30,12 @@ npm install websocket-response-tester --save-dev
 var WRT = require('websocket-response-tester')
 
 var socket = require('socket.io-client')('http://localhost:3000')
-console.log(socket.io.engine.id) // to get the socketUniqueId
 
-WRT.build()
-.addEventWaiter(socket, 'message')
+WRT()
+.registerSockets({
+	mySocket: socket
+})
+.addEventWaiter('mySocket', 'message')
 .queueFunction(() => {
 	// do something that should trigger messages being received by the socket
 
@@ -49,12 +51,12 @@ Then is only called after the socket has received the stated event. If the socke
 ```javascript
 // Responses are of the form
 {
-	socketUniqueId1: {
+	socketName1: {
 		eventTitle1: [data]
 	},
-	socketUniqueId2: {
+	socketName2: {
 		eventTitle2: [data, data],
-		eventTitle3: [data3]
+		eventTitle3: [data]
 	}
 }
 ```
@@ -71,10 +73,15 @@ var socket1 = require('socket.io-client')('http://localhost:3000')
 var socket2 = require('socket.io-client')('http://localhost:3000')
 var socket3 = require('socket.io-client')('http://localhost:3000')
 
-WRT.build()
-.addEventWaiter([socket1, socket2, socket3], 'message')
-.addEventWaiter([socket1, socket2], 'message')
-.addEventWaiter(socket3, 'news')
+WRT()
+.registerSockets({
+	name1: socket1,
+	name2: socket2,
+	name3: socket3
+})
+.addEventWaiter(['name1', 'name2', 'name3'], 'message')
+.addEventWaiter(['name1', 'name2'], 'message')
+.addEventWaiter('name3, 'news')
 .queueFunction(() => {
 	// do something that should trigger messages being received by the socket
 
