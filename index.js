@@ -32,139 +32,109 @@
 
 
 
-var SocketResponseTester = (function() {
+var SocketResponseTester = function() {
+
+	var connections = {}
+	var asyncs = []
+	var resolves = {}
+	var storedPromises = []
+	var responses = {}
 
 	return {
 
-		build: function() {
-
-			var connections = []
-			var asyncs = []
-			var resolves = {}
-			var storedPromises = []
-			var responses = {}
-
-			var tester = {}
-
-			tester.addEventWaiter = function(sockets, event) {
-				// can be either a single socket, or an array of sockets
-				if (sockets.length == undefined) {
-					sockets = [sockets]
+		registerSockets: function(sockets) {
+			// sockets => {name1: socket1, name2: socket2}
+			Object.keys(sockets).forEach((name) => {
+				if (!connections[name]) {
+					connections[name] = {
+						socket: sockets[name],
+						events: {},
+						resolves: {}
+					}
+				} else {
+					connections[name].socket = sockets[name]
 				}
-				sockets.forEach((socket) => {
-					var conn = connections[socket.io.engine.id]
-					if (!conn) {
-						conn = {
-							socket: socket,
-							events: {},
-							resolves: {}
-						}
-						connections[socket.io.engine.id] = conn
-					}
-					if (!conn.events[event]) {
-						conn.events[event] = 0
-					}
-					conn.events[event]++
-				})
-				return this
-			}
-
-			tester.queueFunction = function(f) {
-				asyncs.push(f)
-				return this
-			}
-
-
-
-			tester.then = function(f) {
-				// attach listeners to listen for emit events. 
-				Object.keys(connections).forEach((id) => {
-					var conn = connections[id]
-					Object.keys(conn.events).forEach((event) => {
-						var listener = (data) => {
-							// only remove the listener if all events have been caught
-							conn.events[event]--
-							if (conn.events[event] == 0) {
-								conn.socket.off(event, listener);
-							}
-							if (!responses[conn.socket.io.engine.id]) {
-								responses[conn.socket.io.engine.id] = {}
-							}
-							if (!responses[conn.socket.io.engine.id][event]) {
-								responses[conn.socket.io.engine.id][event] = []
-							}
-							responses[conn.socket.io.engine.id][event].push(data)
-							conn.resolves[event].shift()(true)
-						}
-						conn.socket.on(event, listener)
-					})
-				})
-				// this mechanism creates promises whose resolves are stored for later use
-				Object.keys(connections).forEach((id) => {
-					var conn = connections[id]
-					Object.keys(conn.events).forEach((event) => {
-						for (var i = 0; i < conn.events[event]; i++) {
-							storedPromises.push(new Promise((resolve, reject) => {
-								if (!conn.resolves[event]) {
-									conn.resolves[event] = []
-								}
-								conn.resolves[event].push(resolve)
-							}))
-						}
-					})
-				})
-				asyncs.forEach((f) => {
-					f()
-				})
-				return Promise.all(storedPromises)
-				.then(() => {
-					return f(responses)
-				})
-			}
-
-			return tester
-
-
+			})
+			return this
 		},
 
-		fire: function(sockets, promiseFactory) {
+		addEventWaiter: function(names, event) {
+			// can be either a single name or an array of names
+			if (typeof(names) == 'string') {
+				names = [names]
+			} 
+			// check that sockets are all registered
+			names.forEach((name) => {
+				if (!connections[name] || !connections[name].socket || connections[name].socket.disconnected) {
+					throw new Error(name + ' is not a registered socket')
+				}
+			})
+			// add events
+			names.forEach((name) => {
+				var conn = connections[name]
+				if (!conn.events[event]) {
+					conn.events[event] = 1
+				} else {
+					conn.events[event]++
+				}
+			})
+			return this
+		},
 
-			var that = this;
-			var resolves = {};
-			var storedPromises = [];
+		queueFunction : function(f) {
+			asyncs.push(f)
+			return this
+		},
 
-			return Promise.all(sockets.map((socket, index) => {
-				return new Promise((resolve, reject) => {
+
+		then: function(f) {
+			// attach listeners to listen for emit events. 
+			Object.keys(connections).forEach((name) => {
+				var conn = connections[name]
+				Object.keys(conn.events).forEach((event) => {
 					var listener = (data) => {
-						socket.removeListener('message', listener);
-						// use the resolves from the later stage
-						resolves[index](data);
+						// only remove the listener if all events have been caught
+						conn.events[event]--
+						if (conn.events[event] == 0) {
+							conn.socket.off(event, listener);
+						}
+						if (!responses[name]) {
+							responses[name] = {}
+						}
+						if (!responses[name][event]) {
+							responses[name][event] = []
+						}
+						responses[name][event].push(data)
+						conn.resolves[event].shift()(true)
 					}
-					socket.on('message', listener);
-					resolve(true);
+					conn.socket.on(event, listener)
 				})
-			}))
-			.then(() => {
-				sockets.forEach((socket, index) => {
-					// this mechanism creates promises whose resolves are stored for later use
-					storedPromises.push(new Promise((resolve, reject) => {
-						resolves[index] = resolve;
-					}))
+			})
+			// this mechanism creates promises whose resolves are stored for later use
+			Object.keys(connections).forEach((name) => {
+				var conn = connections[name]
+				Object.keys(conn.events).forEach((event) => {
+					for (var i = 0; i < conn.events[event]; i++) {
+						storedPromises.push(new Promise((resolve, reject) => {
+							if (!conn.resolves[event]) {
+								conn.resolves[event] = []
+							}
+							conn.resolves[event].push(resolve)
+						}))
+					}
 				})
-				return true;
 			})
+			asyncs.forEach((f) => {
+				f()
+			})
+			return Promise.all(storedPromises)
 			.then(() => {
-				return promiseFactory();
+				return f(responses)
 			})
-			.then(() => {
-				// at this point, wait for all stored promises to resolve, then return their values
-				return Promise.all(storedPromises);
-			})
-
 		}
 
 	}
 
-}())
+}
 
 module.exports = SocketResponseTester;
