@@ -81,7 +81,7 @@ WRT()
 })
 .addEventWaiter(['name1', 'name2', 'name3'], 'message')
 .addEventWaiter(['name1', 'name2'], 'message')
-.addEventWaiter('name3, 'news')
+.addEventWaiter('name3', 'news')
 .queueFunction(() => {
 	// do something that should trigger messages being received by the socket
 
