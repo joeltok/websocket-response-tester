@@ -86,14 +86,15 @@ describe('Test builder', function() {
 	})
 
 	it('# Socket array with one event', function(done) {
-		wrt.build()
-		.addEventWaiter([donkeys.pink, donkeys.teal], 'message')
+		wrt()
+		.registerSockets(donkeys)
+		.addEventWaiter(['pink','teal'], 'message')
 		.queueFunction(() => {
 			donkeys.blue.emit('message', 'brayyyy')
 		})
 		.then((responses) => {
-			assert.equal(responses[donkeys.pink.io.engine.id]['message'][0], 'brayyyy')
-			assert.equal(responses[donkeys.teal.io.engine.id]['message'][0], 'brayyyy')
+			assert.equal(responses['pink']['message'][0], 'brayyyy')
+			assert.equal(responses['pink']['message'][0], 'brayyyy')
 			done();
 		})
 	})
