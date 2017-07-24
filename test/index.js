@@ -39,16 +39,15 @@ io.on('connection', function(client) {
 server.listen(3000)
 
 // Create sockets
-var socketGen = function(name) {
-	var client = require('socket.io-client')('http://localhost:3000')
-	client.on('connect', () => {
-	})
-	return client
-}
-var donkeys = {
-	blue: socketGen('blue'),
-	pink: socketGen('pink'),
-	teal: socketGen('teal')
+var socketGen = function() {
+	return new Promise((resolve, reject) => {
+		var client = require('socket.io-client')('http://localhost:3000')
+		client.on('connect', () => {
+			resolve(client)
+		})
+
+	}) 
+	
 }
 
 // Call the module to test
@@ -58,14 +57,29 @@ var wrt = require('./../index.js')
 // test cases
 describe('Test builder', function() {
 
+	var donkeys;
+
+	before('Create the sockets', function(done) {
+		Promise.all([socketGen(), socketGen(), socketGen()])
+		.then((sockets) => {
+			donkeys = {
+				blue: sockets[0],
+				pink: sockets[1],
+				teal: sockets[2]
+			}
+			done()
+		})
+	})
+
 	it('# One socket with one event', function(done) {
-		wrt.build()
-		.addEventWaiter(donkeys.blue, 'animal sound')
+		wrt()
+		.registerSockets(donkeys)
+		.addEventWaiter('blue', 'animal sound')
 		.queueFunction(() => {
 			donkeys.blue.emit('animal sound', 'oink oink')
 		})
 		.then((responses) => {
-			assert.equal(responses[donkeys.blue.io.engine.id]['animal sound'][0], 'you are supposed to be a donkey')
+			assert.equal(responses['blue']['animal sound'][0], 'you are supposed to be a donkey')
 			done()
 		})
 
